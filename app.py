@@ -33,11 +33,6 @@ sensort.measure()
 #Configuración del LED RGB
 rgb = claseRGB.LedRGB(2,4,15)
 #------------------------------------------------
-
-
-
-#------------------------------------------------
-
 def ConexionRED():
     #Ciclo que valide en 5 segundos que se establezca la conexión
     for i in range(5):
@@ -62,7 +57,7 @@ def ConexionRED():
         oled.show()
 _thread.start_new_thread(ConexionRED,())
 #------------------------------------------------
-#Pagina web
+#Servicio Web encargado de pintar la los graficos del sensor
 def web_page():  
     html = """
 <html>
@@ -79,11 +74,12 @@ def web_page():
 </body>            
 </html>  """
     return html
-
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind(('', 80))
 tcp_socket.listen(3)
 def MostrarPG():
+#------------------------------------------------
+#Muestra la pagina y actualiza constantemente
     while True:
         conn, addr = tcp_socket.accept()
         print('Nueva conexion desde:  %s' % str(addr))
@@ -98,6 +94,7 @@ def MostrarPG():
         conn.close()
 _thread.start_new_thread(MostrarPG,())        
 #------------------------------------------------
+#Escritura sobre las API ThingSpeak
 while True:
     oled.fill(0)
     sleep(2)
