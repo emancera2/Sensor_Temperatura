@@ -33,6 +33,11 @@ sensort.measure()
 #Configuración del LED RGB
 rgb = claseRGB.LedRGB(2,4,15)
 #------------------------------------------------
+
+
+
+#------------------------------------------------
+
 def ConexionRED():
     #Ciclo que valide en 5 segundos que se establezca la conexión
     for i in range(5):
@@ -57,6 +62,42 @@ def ConexionRED():
         oled.show()
 _thread.start_new_thread(ConexionRED,())
 #------------------------------------------------
+#Pagina web
+def web_page():  
+    html = """
+<html>
+<head>
+<title>Medidor de humedad y temperatura</title>
+</head>            
+<body>
+<center>
+<iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/1447645/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=15&type=spline"></iframe>
+<br>
+<br>
+<iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/1454840/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=10&type=spline"></iframe>
+</center>
+</body>            
+</html>  """
+    return html
+
+tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+tcp_socket.bind(('', 80))
+tcp_socket.listen(3)
+def MostrarPG():
+    while True:
+        conn, addr = tcp_socket.accept()
+        print('Nueva conexion desde:  %s' % str(addr))
+        request = conn.recv(1024)
+        print('Solicitud = %s' % str(request))    
+        #Mostrar Página
+        response = web_page()
+        conn.send('HTTP/1.1 200 OK\n')
+        conn.send('Content-Type: text/html\n')
+        conn.send('Connection: close\n\n')
+        conn.sendall(response)
+        conn.close()
+_thread.start_new_thread(MostrarPG,())        
+#------------------------------------------------
 while True:
     oled.fill(0)
     sleep(2)
@@ -67,9 +108,12 @@ while True:
     oled.text('humd : '+str(h) + " %", 0,10,1)
     oled.show()   
     utime.sleep(2)
-    #url="https://api.thingspeak.com/update?api_key=YWA90E43Q1X709Q8&field1="
-    url="https://api.thingspeak.com/update?api_key=UF6WR2PQ8W3EFKS5&field1="
-    url += str(h)
-    r = urequests.get(url)
-    print(r.json())
-#------------------------------------------------
+    url1="https://api.thingspeak.com/update?api_key=UF6WR2PQ8W3EFKS5&field1="
+    url1 += str(t)
+    r1 = urequests.get(url1)
+    print(r1.json())
+    url2="https://api.thingspeak.com/update?api_key=6ZLA92ULEGMRBEWU&field1="
+    url2 += str(h)
+    r2 = urequests.get(url2)
+    print(r2.json())
+#------------------------------------------------  
