@@ -4,3 +4,5 @@ idna==3.2
 network==0.1
 requests==2.26.0
 urllib3==1.26.6
+sssd1306
+claseRGB

@@ -77,9 +77,10 @@ def web_page():
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind(('', 80))
 tcp_socket.listen(3)
-def MostrarPG():
+
 #------------------------------------------------
 #Muestra la pagina y actualiza constantemente
+def MostrarPG():
     while True:
         conn, addr = tcp_socket.accept()
         print('Nueva conexion desde:  %s' % str(addr))
